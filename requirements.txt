@@ -1,6 +1,1 @@
-
-opencv-python
-mediapipe==0.10.21
-pyautogui
-pycaw
-comtypes
+streamlit
