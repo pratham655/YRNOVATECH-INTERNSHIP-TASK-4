@@ -1,10 +1,9 @@
 import math
 
-import cv2
 import mediapipe as mp
 import numpy as np
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageDraw
 
 st.set_page_config(page_title="AI Hand Gesture Lab", page_icon="✋", layout="wide")
 
@@ -54,27 +53,34 @@ def classify_gesture(hand):
 def analyse_image(uploaded):
     pil_image = Image.open(uploaded).convert("RGB")
     rgb = np.array(pil_image)
-    bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
     results = get_hands_model().process(rgb)
-    annotated = bgr.copy()
+    annotated = pil_image.copy()
+    draw = ImageDraw.Draw(annotated)
+    width, height = pil_image.size
     found = []
 
     if results.multi_hand_landmarks:
         for idx, hand in enumerate(results.multi_hand_landmarks):
-            mp.solutions.drawing_utils.draw_landmarks(
-                annotated,
-                hand,
-                mp.solutions.hands.HAND_CONNECTIONS,
-                mp.solutions.drawing_styles.get_default_hand_landmarks_style(),
-                mp.solutions.drawing_styles.get_default_hand_connections_style(),
-            )
+            # Draw the MediaPipe hand skeleton with Pillow so this hosted app
+            # does not depend on importing OpenCV's cv2 module.
+            for start, end in mp.solutions.hands.HAND_CONNECTIONS:
+                p1 = hand.landmark[start]
+                p2 = hand.landmark[end]
+                draw.line(
+                    (p1.x * width, p1.y * height, p2.x * width, p2.y * height),
+                    fill=(0, 220, 150),
+                    width=max(2, width // 320),
+                )
+            radius = max(3, width // 120)
+            for point in hand.landmark:
+                x, y = point.x * width, point.y * height
+                draw.ellipse((x-radius, y-radius, x+radius, y+radius), fill=(255, 80, 80))
             label, count = classify_gesture(hand)
             handedness = "Hand"
             if results.multi_handedness and idx < len(results.multi_handedness):
                 handedness = results.multi_handedness[idx].classification[0].label
             found.append({"hand": handedness, "gesture": label, "extended_fingers": count})
-    annotated_rgb = cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB)
-    return pil_image, annotated_rgb, found
+    return pil_image, annotated, found
 
 tab_camera, tab_upload = st.tabs(["📷 Use camera", "📁 Upload image"])
 with tab_camera:
