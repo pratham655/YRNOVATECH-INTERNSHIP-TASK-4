@@ -58,9 +58,7 @@ The program starts paused. Press P to enable control and P again to pause. Press
 
 See the `demo/` folder for the project demonstration.
 
-## Screenshots
 
-See the `screenshots/` folder for screenshots of the application.
 
 ## Internship
 
