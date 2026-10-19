@@ -63,3 +63,16 @@ See the `demo/` folder for the project demonstration.
 ## Internship
 
 YR NOVATECH AI & ML Internship — Task 4
+
+## Streamlit Showcase
+
+The repository includes `app.py`, a hosted-friendly Streamlit project showcase. It explains the gesture mappings and technical architecture. It does **not** run the local webcam/mouse controller from the browser; the actual controller requires a compatible Windows desktop.
+
+### Deploy the showcase
+
+1. Open Streamlit Community Cloud and sign in with GitHub.
+2. Choose **Create app** and select `pratham655/YRNOVATECH-INTERNSHIP-TASK-4`.
+3. Select branch `main` and main file path `app.py`.
+4. Deploy. Streamlit Cloud installs the lightweight dependency from `requirements.txt`.
+
+For the actual desktop controller, follow the Windows installation steps above.
